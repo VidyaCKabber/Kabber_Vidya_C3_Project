@@ -2,7 +2,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.sql.SQLOutput;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Arrays;
 import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,5 +56,24 @@ class RestaurantTest {
         createMockRestaurant();
         assertThrows(itemNotFoundException.class,
                 ()->restaurant.removeFromMenu("French fries"));
+    }
+
+    @Test
+    public void select_item_from_list_should_return_total_order_cost(){
+        int totalCost;
+        createMockRestaurant();
+        List<String> selectedItemNames = Arrays.asList("Sweet corn soup", "Vegetable lasagne" ) ;
+        totalCost = restaurant.getTotalCostByItemsName(selectedItemNames) ;
+        assertEquals(388, totalCost);
+    }
+
+    @Test
+    public void order_value_should_reduce_cumulative_total_when_an_item_removed(){
+        createMockRestaurant();
+        List<Item> spoof = restaurant.getMenu();
+        int total = restaurant.getOrderValue(spoof);
+        int afterTotal = spoof.get(1).getPrice();
+        spoof.remove(1);
+        assertEquals(total-afterTotal, restaurant.getOrderValue(spoof));
     }
 }
